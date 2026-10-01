@@ -1,0 +1,7 @@
+---
+- name: Roles for base
+  hosts: ["base"]
+  become: true
+  roles:
+    - role: common
+      tags: common

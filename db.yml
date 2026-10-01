@@ -1,0 +1,9 @@
+---
+- name: Role for database servers
+  hosts: ["db-servers"]
+  become: true
+  roles:
+    - role: common
+      tags: common
+    - role: db
+      tags: db
