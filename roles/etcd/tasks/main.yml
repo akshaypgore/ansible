@@ -1,0 +1,39 @@
+- name: Install etcd-server
+  ansible.builtin.apt:
+    pkg:
+      - etcd-server = {{ etcd_server_version }}
+  notify: Enable and Start etcd-server
+
+- name: Install etcd-client
+  ansible.builtin.apt:
+    pkg:
+      - etcd-client = {{ etcd_client_version }}
+
+- name: Deploy complete etcd environment configuration file
+  ansible.builtin.template:
+    src: etcd.j2
+    dest: /etc/default/etcd
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd and restart etcd service
+
+- name: Create systemd drop-in directory for etcd
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ service_name }}.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create drop-in configuration file for etcd
+  ansible.builtin.copy:
+    dest: "/etc/systemd/system/{{ service_name }}.service.d/10-custom-overrides.conf"
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/usr/bin/etcd --config-file=/etc/default/etcd
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd and restart etcd service

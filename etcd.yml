@@ -1,0 +1,9 @@
+---
+- name: Role for etcd servers
+  hosts: ["k8s-etcd-server"]
+  become: true
+  roles:
+    - role: common
+      tags: common
+    - role: etcd
+      tags: etcd

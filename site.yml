@@ -6,3 +6,6 @@
 
 - name: Include a play for web
   ansible.builtin.import_playbook: web.yml
+
+- name: Include a play for etcd
+  ansible.builtin.import_playbook: etcd.yml
