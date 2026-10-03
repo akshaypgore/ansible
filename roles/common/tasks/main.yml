@@ -1,3 +1,8 @@
+- name: Set timezone to Asia/Kolkata
+  become: true
+  community.general.timezone:
+    name: Asia/Kolkata
+
 - name: Update cache
   ansible.builtin.apt:
     update_cache: true
