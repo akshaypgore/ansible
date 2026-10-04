@@ -1,11 +1,11 @@
 name: "{{ inventory_hostname }}"
-initial-advertise-peer-urls: https://"{{ ansible_host }}":2380
-listen-peer-urls: https://"{{ ansible_host }}":2380
-listen-client-urls: https://"{{ ansible_host }}":2379,https://127.0.0.1:2379
-advertise-client-urls: https://"{{ ansible_host }}":2379
+initial-advertise-peer-urls: https://{{ ansible_host }}:2380
+listen-peer-urls: https://{{ ansible_host }}:2380
+listen-client-urls: https://{{ ansible_host }}:2379,https://127.0.0.1:2379
+advertise-client-urls: https://{{ ansible_host }}:2379
 initial-cluster-token: "{{ initial_cluster_token }}"
 initial-cluster: "{{ initial_cluster }}"
-initial-cluster-state: 'new'
+initial-cluster-state: "new"
 data-dir: /data
 wal-dir: /wal/wal-data
 snapshot-count: 10000
@@ -29,17 +29,17 @@ metrics: basic
 proxy: 'off'
 
 client-transport-security:
-  cert-file: /etc/pki/"{{ inventory_hostname }}".crt
-  key-file: /etc/pki/"{{ inventory_hostname }}"-private.key
+  cert-file: /etc/ssl/certs/{{ inventory_hostname }}.crt
+  key-file: /etc/ssl/private/{{ inventory_hostname }}-private.key
   client-cert-auth: true
-  trusted-ca-file: /etc/pki/ca.crt
+  trusted-ca-file: /etc/ssl/certs/ca.crt
   auto-tls: true
 
 peer-transport-security:
-  cert-file: /etc/pki/"{{ inventory_hostname }}".crt
-  key-file: /etc/pki/"{{ inventory_hostname }}"-private.key
+  cert-file: /etc/ssl/certs/{{ inventory_hostname }}.crt
+  key-file: /etc/ssl/private/{{ inventory_hostname }}-private.key
   client-cert-auth: true
-  trusted-ca-file: /etc/pki/ca.crt
+  trusted-ca-file: /etc/ssl/certs/ca.crt
   auto-tls: true
 
 # Enable debug-level logging for etcd.

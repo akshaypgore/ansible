@@ -10,5 +10,6 @@
 - name: Install basic packages
   ansible.builtin.apt:
     pkg:
-      - vim=2:9.1.2141-1ubuntu4.9
-      - net-tools=2.10-2ubuntu1
+      - "vim={{ common_vim_version }}"
+      - "net-tools={{ common_net_tools_version }}"
+      - "tmux={{ common_tmux_version }}"

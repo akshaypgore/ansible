@@ -1,18 +1,42 @@
+- name: Update cache
+  ansible.builtin.apt:
+    update_cache: true
+
 - name: Install etcd-server
   ansible.builtin.apt:
     pkg:
-      - etcd-server = "{{ etcd_server_version }}"
-  notify: Enable and Start etcd-server
+      - "etcd-server={{ etcd_server_version }}"
+  notify: Reload systemd and restart etcd service
 
 - name: Install etcd-client
   ansible.builtin.apt:
     pkg:
-      - etcd-client = "{{ etcd_client_version }}"
+      - "etcd-client={{ etcd_client_version }}"
+
+- name: Create required data and wal directories for etcd
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: etcd
+    group: etcd
+    mode: "0755"
+    recurse: true
+  loop:
+    - /data
+    - /wal
+
+- name: Set permissions for a ssl directory
+  ansible.builtin.file:
+    path: /etc/ssl/private
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
 
 - name: Copy CA Certificate
   ansible.builtin.copy:
     src: files/certs/ca.crt
-    dest: /etc/pki/ca.crt
+    dest: /etc/ssl/certs/ca.crt
     owner: etcd
     group: etcd
     mode: "0644"
@@ -20,8 +44,8 @@
 
 - name: Copy Node Server Certificate
   ansible.builtin.copy:
-    src: files/certs/"{{ inventory_hostname }}".crt
-    dest: /etc/pki/"{{ inventory_hostname }}".crt
+    src: "files/certs/{{ inventory_hostname }}.crt"
+    dest: "/etc/ssl/certs/{{ inventory_hostname }}.crt"
     owner: etcd
     group: etcd
     mode: "0644"
@@ -29,8 +53,8 @@
 
 - name: Copy Node Server Private Key
   ansible.builtin.copy:
-    src: files/certs/"{{ inventory_hostname }}"-private.key
-    dest: /etc/pki/"{{ inventory_hostname }}"-private.key
+    src: "files/certs/{{ inventory_hostname }}-private.key"
+    dest: "/etc/ssl/private/{{ inventory_hostname }}-private.key"
     owner: etcd
     group: etcd
     mode: "0600"
