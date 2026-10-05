@@ -1,0 +1,26 @@
+vrrp_script check_haproxy {
+    script "/etc/keepalived/check_haproxy.sh"
+    interval 2
+    weight 2
+}
+
+vrrp_instance VI_1 {
+    state "{{ haproxy_ha_state }}"
+    interface enp0s3
+    virtual_router_id "{{ virtual_router_id }}"
+    priority "{{ keepalived_priority }}"
+    advert_int 1
+
+    authentication {
+        auth_type PASS
+        auth_pass kcluster # Max 8 characters
+    }
+
+    virtual_ipaddress {
+        {{ vip }}     #Floating VIP
+    }
+
+    track_script {
+        check_haproxy
+    }
+}

@@ -1,0 +1,9 @@
+---
+- name: Role for haproxy servers
+  hosts: ["k8s-haproxy-server"]
+  become: true
+  roles:
+    - role: common
+      tags: common
+    - role: haproxy
+      tags: haproxy

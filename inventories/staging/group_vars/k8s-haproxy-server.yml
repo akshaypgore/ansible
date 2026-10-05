@@ -1,0 +1,8 @@
+---
+lb_service_name: "haproxy"
+keepalived_service_name: "keepalived"
+haproxy_version: "3.2.9-1ubuntu2.2"
+keepalived_version: "1:2.3.4-1"
+psmisc_version: "23.7-2ubuntu2"
+virtual_router_id: "51"
+vip: "192.168.1.68/24"
