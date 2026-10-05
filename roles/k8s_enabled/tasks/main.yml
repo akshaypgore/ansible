@@ -1,0 +1,107 @@
+- name: Update cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Disable swap immediately and permanently on boot
+  ansible.posix.mount:
+    name: none
+    fstype: swap
+    state: absent
+
+- name: Load multiple kernel modules and persist on boot
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+    persistent: present
+  loop:
+    - overlay
+    - br_netfilter
+
+- name: Enable IPv4 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    sysctl_set: true
+    reload: true
+
+- name: Enable routing for IPv4
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: "1"
+    state: present
+    sysctl_set: true
+    reload: true
+
+- name: Enable routing for IPv6
+  ansible.posix.sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: "1"
+    state: present
+    sysctl_set: true
+    reload: true
+
+- name: Install container runtime
+  ansible.builtin.apt:
+    pkg:
+      - "containerd={{ containerd_version }}"
+  notify: Reload systemd and restart containerd service
+
+- name: Download kubectl
+  ansible.builtin.get_url:
+    url: https://dl.k8s.io/release/v1.37.0/bin/linux/amd64/kubectl
+    dest: /usr/local/bin/kubectl
+    mode: "0755"
+    force: true
+
+- name: Check kubectl version
+  ansible.builtin.command: "kubectl version --client"
+  changed_when: false
+
+- name: Install few packages
+  ansible.builtin.apt:
+    pkg:
+      - "apt-transport-https"
+      - "ca-certificates"
+      - "gnupg"
+
+- name: Execute raw curl download command
+  ansible.builtin.get_url:
+    url: https://pkgs.k8s.io/core:/stable:/v1.37/deb/Release.key
+    dest: /tmp/kubernetes-apt-keyring.gpgkey
+    mode: "0644"
+
+- name: Dearmor key into keyrings
+  ansible.builtin.command:
+    cmd: gpg --batch --yes --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-apt-keyring.gpgkey
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+- name: Set key permissions
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    mode: "0644"
+
+- name: Remove temp key
+  ansible.builtin.file:
+    path: /tmp/kubernetes-apt-keyring.gpg
+    state: absent
+
+- name: Add specified repository into sources list
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.37/deb/ /"
+    state: present
+    filename: kubernetes
+    update_cache: true
+  tags: add-repo
+
+- name: Install kubernetes essentials
+  ansible.builtin.apt:
+    pkg:
+      - "kubectl={{ kubectl_version }}"
+      - "kubelet={{ kubelet_version }}"
+      - "kubeadm={{ kubeadm_version }}"
+
+- name: Ensure kubelet is enabled
+  ansible.builtin.service:
+    name: kubelet
+    enabled: true

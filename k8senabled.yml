@@ -1,0 +1,9 @@
+---
+- name: Role for k8s servers
+  hosts: ["k8s-master-server", "k8s-worker-server"]
+  become: true
+  roles:
+    - role: common
+      tags: common
+    - role: k8s_enabled
+      tags: k8s_enabled

@@ -20,4 +20,7 @@ k8s-haproxy-2 ansible_host=192.168.1.67
 [k8s-master-server]
 k8s-master-1 ansible_host=192.168.1.71
 k8s-master-2 ansible_host=192.168.1.72
-k8s-master-3 ansible_host=192.168.1.73
+
+[k8s-worker-server]
+k8s-worker-1 ansible_host=192.168.1.76
+k8s-worker-2 ansible_host=192.168.1.77
