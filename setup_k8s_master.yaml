@@ -1,0 +1,17 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+kubernetesVersion: stable
+controlPlaneEndpoint: "192.168.1.67:6443"
+etcd:
+  external:
+    endpoints:
+      - https://192.168.1.61:2379
+      - https://192.168.1.62:2379
+      - https://192.168.1.63:2379
+    caFile: /etc/kubernetes/pki/etcd/ca.crt
+    certFile: /etc/kubernetes/pki/apiserver-etcd-client.crt
+    keyFile: /etc/kubernetes/pki/apiserver-etcd-client.key
+
+Step: 1
+run_command: kubeadm init --config kubeadm-config.yaml --upload-certs (on master node)

@@ -4,3 +4,4 @@ etcd_server_version: "3.5.16-10"
 etcd_client_version: "3.5.16-10"
 initial_cluster_token: "k8s-etcd-cluster"
 initial_cluster: k8s-etcd-1=https://192.168.1.61:2380,k8s-etcd-2=https://192.168.1.62:2380,k8s-etcd-3=https://192.168.1.63:2380
+upgraded_etcd_version: "3.5.34"

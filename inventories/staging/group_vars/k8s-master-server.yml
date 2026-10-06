@@ -5,3 +5,6 @@ kubectl_version: "1.37.1-1.1"
 kubernetes_version: "v1.37"
 kubelet_version: "1.37.1-1.1"
 kubeadm_version: "1.37.1-1.1"
+etcd_1: 192.168.1.61
+etcd_2: 192.168.1.62
+etcd_3: 192.168.1.63

@@ -1,0 +1,7 @@
+---
+- name: Role to upgrade etcd servers
+  hosts: ["k8s-etcd-server"]
+  become: true
+  roles:
+    - role: upgrade_etcd
+      tags: upgrade_etcd

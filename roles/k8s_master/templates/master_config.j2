@@ -1,0 +1,14 @@
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+kubernetesVersion: stable
+controlPlaneEndpoint: "192.168.1.68:6443"
+etcd:
+  external:
+    endpoints:
+      - https://{{ etcd_1 }}:2379
+      - https://{{ etcd_2 }}:2379
+      - https://{{ etcd_3 }}:2379
+    caFile: /etc/kubernetes/pki/ca.crt
+    certFile: /etc/kubernetes/pki/{{ inventory_hostname }}.crt
+    keyFile: /etc/kubernetes/pki/{{ inventory_hostname }}-private.key

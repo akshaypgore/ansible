@@ -23,37 +23,37 @@ defaults
     timeout server          30m # Keep kubernetes watch streams alive
     timeout check           10s
 
-#---------------------------------------------------------------------
-# K8s Control Plane (API Server) Load Balancing
-#---------------------------------------------------------------------
-frontend k8s_api_frontend
-    bind 192.168.1.10:6443     # Bind strictly to your VIP
-    mode tcp
-    default_backend k8s_api_backend
+## Frontend Configuration
+{% for frontend in haproxy_frontends | default([]) %}
+frontend {{ frontend.name }}
+    bind {{ frontend.bind }}
+    mode {{ frontend.mode | default('http') }}
+    default_backend {{ frontend.default_backend }}
+{% endfor %}
 
-backend k8s_api_backend
-    mode tcp
-    option tcp-check
-    balance roundrobin         # Even distribution
-    # Kubernetes API native health endpoint (/readyz) via HTTP check over SSL
-    option httpchk GET /readyz
-    http-check expect status 200
+## Backend Configuration
+{% for backend in haproxy_backends | default([]) %}
+backend {{ backend.name }}
+    mode {{ backend.mode | default('http') }}
+{% if backend.tcp_option is defined %}
+    option {{ backend.tcp_option }}
+{% endif %}
+{% if backend.http_option is defined %}
+    option {{ backend.http_option }} GET /readyz
+{% endif %}
+    balance {{ backend.balance | default('roundrobin') }}
+{% for server in backend.servers | default([]) %}
+    server {{ server.name }} {{ server.ip }}:{{ server.port }}
+{%- if backend.check_options is defined %} {{ backend.check_options ~ "\n" }}{%- endif %}
+{% endfor %}
+{% endfor %}
 
-    {% for host in groups['k8s-master-server']%}
-    server {{ host }} {{ hostvars[host]['ansible_host']}}:6443 check check-ssl verify none inter 2000 rise 2 fall 3
-    {% endfor %}
 
-#    server k8s-master-01 192.168.1.21:6443 check check-ssl verify none inter 2000 rise 2 fall 3
-#    server k8s-master-02 192.168.1.22:6443 check check-ssl verify none inter 2000 rise 2 fall 3
-#    server k8s-master-03 192.168.1.23:6443 check check-ssl verify none inter 2000 rise 2 fall 3
-
-#---------------------------------------------------------------------
-# HAProxy Stats Dashboard (Optional - secure in production)
-#---------------------------------------------------------------------
-# listen stats
-#     bind 192.168.1.10:9000
-#     mode http
-#     stats enable
-#     stats uri /
-#     stats refresh 10s
-#     stats auth admin:YourSecurePassword Here
+# HAProxy Stats Dashboard
+listen stats
+    bind {{ ansible_host }}:9000
+    mode http
+    stats enable
+    stats uri /
+    stats refresh 10s
+    stats auth admin:haproxy123

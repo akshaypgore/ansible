@@ -1,2 +1,0 @@
-subjectAltName = DNS:k8s-etcd-2,DNS:k8s-etcd-2.local,IP:192.168.1.62,IP:127.0.0.1
-extendedKeyUsage = serverAuth,clientAuth

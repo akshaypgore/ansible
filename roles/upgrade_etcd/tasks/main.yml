@@ -1,0 +1,32 @@
+- name: Gather service facts
+  ansible.builtin.service_facts:
+
+- name: Fail if etcd is not running
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.services['etcd.service'] is defined
+      - ansible_facts.services['etcd.service'].state == 'running'
+    fail_msg: "etcd is not running"
+    success_msg: "etcd is running"
+
+- name: Stop etcd
+  ansible.builtin.service:
+    name: etcd
+    state: stopped
+
+- name: Download etcd {{ upgraded_etcd_version }}
+  ansible.builtin.unarchive:
+    src: "https://github.com/etcd-io/etcd/releases/download/v{{ upgraded_etcd_version }}/etcd-v{{ upgraded_etcd_version }}-linux-amd64.tar.gz"
+    dest: /tmp
+    remote_src: true
+    mode: "0755"
+
+- name: Copy etcd to executable path
+  ansible.builtin.copy:
+    src: /tmp/etcd-v{{ upgraded_etcd_version }}-linux-amd64/etcd
+    dest: /usr/bin/etcd
+    remote_src: true
+    mode: "0755"
+    owner: root
+    group: root
+  notify: Reload systemd and restart etcd service

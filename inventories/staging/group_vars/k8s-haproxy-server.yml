@@ -6,3 +6,24 @@ keepalived_version: "1:2.3.4-1"
 psmisc_version: "23.7-2ubuntu2"
 virtual_router_id: "51"
 vip: "192.168.1.68/24"
+
+haproxy_frontends:
+  - name: k8s_api_frontend
+    bind: "192.168.1.68:6443"
+    mode: tcp
+    default_backend: k8s_api_backend
+
+haproxy_backends:
+  - name: k8s_api_backend
+    mode: tcp
+    tcp_option: tcp-check
+    check_options: check check-ssl verify none inter 2000 rise 2 fall 3
+    http_option: httpchk
+    balance: roundrobin
+    servers:
+      - name: k8s-master-01
+        ip: 192.168.1.71
+        port: 6443
+      - name: k8s-master-02
+        ip: 192.168.1.72
+        port: 6443

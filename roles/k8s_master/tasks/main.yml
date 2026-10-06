@@ -1,0 +1,42 @@
+- name: Copy required Certificates and keys
+  ansible.builtin.copy:
+    src: files/certs/{{ item }}
+    dest: /etc/kubernetes/pki/
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - ca.crt
+    - "{{ inventory_hostname }}.crt"
+    - "{{ inventory_hostname }}-private.key"
+
+- name: Copy k8s init configuration file
+  ansible.builtin.template:
+    src: master_config.j2
+    dest: /root/master_config.yaml
+    owner: root
+    group: root
+    mode: "0644"
+# - name: Copy CA Certificate
+#   ansible.builtin.copy:
+#     src: files/certs/ca.crt
+#     dest: /etc/kubernetes/pki/ca.crt
+#     owner: root
+#     group: root
+#     mode: "0644"
+
+# - name: Copy api server certificates
+#   ansible.builtin.copy:
+#     src: "files/certs/{{ inventory_hostname }}.crt"
+#     dest: "/etc/kubernetes/pki/{{ inventory_hostname }}.crt"
+#     owner: root
+#     group: root
+#     mode: "0644"
+
+# - name: Copy Node Server Private Key
+#   ansible.builtin.copy:
+#     src: "files/certs/{{ inventory_hostname }}-private.key"
+#     dest: "/etc/kubernetes/pki/{{ inventory_hostname }}-private.key"
+#     owner: etcd
+#     group: etcd
+#     mode: "0600"
