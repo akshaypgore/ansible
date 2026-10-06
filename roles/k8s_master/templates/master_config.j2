@@ -9,6 +9,6 @@ etcd:
       - https://{{ etcd_1 }}:2379
       - https://{{ etcd_2 }}:2379
       - https://{{ etcd_3 }}:2379
-    caFile: /etc/kubernetes/pki/ca.crt
+    caFile: /etc/kubernetes/pki/etcd/ca.crt
     certFile: /etc/kubernetes/pki/{{ inventory_hostname }}.crt
     keyFile: /etc/kubernetes/pki/{{ inventory_hostname }}-private.key

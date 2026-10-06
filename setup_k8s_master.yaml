@@ -14,4 +14,4 @@ etcd:
     keyFile: /etc/kubernetes/pki/apiserver-etcd-client.key
 
 Step: 1
-run_command: kubeadm init --config kubeadm-config.yaml --upload-certs (on master node)
+run_command: kubeadm init --config master_config.yaml --upload-certs (on master node)
