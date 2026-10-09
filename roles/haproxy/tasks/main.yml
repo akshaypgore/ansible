@@ -15,6 +15,17 @@
       - "keepalived={{ keepalived_version }}"
   notify: Reload systemd and restart keepalived service
 
+- name: Create a sysctl config file
+  ansible.builtin.file:
+    path: "/etc/sysctl.d/{{ item }}"
+    state: touch
+    mode: "0644"
+    owner: root
+    group: root
+  loop:
+    - 99-ip-forward.conf
+    - 98-ip-nonlocal-bind.conf
+
 - name: Enable IPv4 forwarding
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
@@ -22,6 +33,7 @@
     state: present
     sysctl_set: true
     reload: true
+    sysctl_file: /etc/sysctl.d/99-ip-forward.conf
 
 - name: Enable IPv4 nonlocal binding
   ansible.posix.sysctl:
@@ -30,7 +42,7 @@
     sysctl_set: true
     state: present
     reload: true
-  become: true
+    sysctl_file: /etc/sysctl.d/98-ip-nonlocal-bind.conf
 
 - name: Deploy complete haproxy configuration file
   ansible.builtin.template:
@@ -57,3 +69,26 @@
     owner: root
     group: root
     mode: "0755"
+
+- name: Create systemd drop-in directory for keepalived
+  ansible.builtin.file:
+    path: "/etc/systemd/system/{{ keepalived_service_name }}.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create drop-in configuration file for keepalived
+  ansible.builtin.copy:
+    dest: "/etc/systemd/system/{{ keepalived_service_name }}.service.d/10-custom-overrides.conf"
+    content: |
+      [Service]
+      Restart=on-failure
+      RestartSec=5
+      [Unit]
+      After=network-online.target
+      Wants=network-online.target haproxy.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd and restart keepalived service

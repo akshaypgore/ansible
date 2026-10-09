@@ -81,8 +81,12 @@
   ansible.builtin.copy:
     dest: "/etc/systemd/system/{{ service_name }}.service.d/10-custom-overrides.conf"
     content: |
+      [Unit]
+      After=network-online.target
+      Wants=network-online.target
       [Service]
       ExecStart=
+      ExecStartPre=/bin/sh -c 'until ip -4 addr show | grep -q {{ ansible_host }}; do sleep 1; done'
       ExecStart=/usr/bin/etcd --config-file=/etc/default/etcd
     owner: root
     group: root

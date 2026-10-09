@@ -9,3 +9,12 @@
 
 - name: Include a play for etcd
   ansible.builtin.import_playbook: etcd.yml
+
+- name: Include a play for haproxy
+  ansible.builtin.import_playbook: haproxy.yml
+
+- name: Include a play for k8senabled
+  ansible.builtin.import_playbook: k8senabled.yml
+
+- name: Include a play for k8smaster
+  ansible.builtin.import_playbook: k8smaster.yml

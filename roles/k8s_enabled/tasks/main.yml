@@ -17,13 +17,21 @@
     - overlay
     - br_netfilter
 
+- name: Create a sysctl config file
+  ansible.builtin.file:
+    path: /etc/sysctl.d/99-ip-forward.conf
+    state: touch
+    mode: "0644"
+    owner: root
+    group: root
+
 - name: Enable IPv4 forwarding
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
-    value: 1
-    state: present
+    value: "1"
     sysctl_set: true
     reload: true
+    sysctl_file: /etc/sysctl.d/99-ip-forward.conf
 
 - name: Enable routing for IPv4
   ansible.posix.sysctl:
@@ -64,6 +72,7 @@
       - "apt-transport-https"
       - "ca-certificates"
       - "gnupg"
+      - "jq"
 
 - name: Execute raw curl download command
   ansible.builtin.get_url:

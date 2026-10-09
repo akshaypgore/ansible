@@ -1,3 +1,5 @@
 common_vim_version: "2:9.1.2141-1ubuntu4.9"
 common_net_tools_version: "2.10-2ubuntu1"
 common_tmux_version: "3.6a-2ubuntu0.1"
+common_dnsutils: "1:9.20.24-1ubuntu0.3"
+common_iputils: "3:20250605-1ubuntu1"

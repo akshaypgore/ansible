@@ -1,7 +1,16 @@
 - name: Set timezone to Asia/Kolkata
-  become: true
   community.general.timezone:
     name: Asia/Kolkata
+
+- name: Create drop-in configuration file for chrony
+  ansible.builtin.copy:
+    dest: "/etc/chrony/conf.d/10-custom-makestep.conf"
+    content: |
+      makestep 1 -1
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd and restart chrony service
 
 - name: Update cache
   ansible.builtin.apt:
@@ -13,3 +22,5 @@
       - "vim={{ common_vim_version }}"
       - "net-tools={{ common_net_tools_version }}"
       - "tmux={{ common_tmux_version }}"
+      - "bind9-dnsutils={{ common_dnsutils }}"
+      - "iputils-ping={{ common_iputils }}"

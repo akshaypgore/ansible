@@ -1,0 +1,7 @@
+---
+containerd_version: "2.2.2-0ubuntu1.1"
+container_runtime: "containerd"
+kubectl_version: "1.37.1-1.1"
+kubernetes_version: "v1.37"
+kubelet_version: "1.37.1-1.1"
+kubeadm_version: "1.37.1-1.1"

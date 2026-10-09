@@ -1,3 +1,7 @@
+global_defs {
+    vrrp_startup_delay 5
+}
+
 vrrp_script check_haproxy {
     script "/etc/keepalived/check_haproxy.sh"
     interval 2

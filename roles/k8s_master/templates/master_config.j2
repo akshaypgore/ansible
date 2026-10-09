@@ -12,3 +12,5 @@ etcd:
     caFile: /etc/kubernetes/pki/etcd/ca.crt
     certFile: /etc/kubernetes/pki/{{ inventory_hostname }}.crt
     keyFile: /etc/kubernetes/pki/{{ inventory_hostname }}-private.key
+networking:
+  podSubnet: "10.244.0.0/16"
